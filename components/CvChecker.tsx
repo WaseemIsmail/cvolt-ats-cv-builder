@@ -8,8 +8,7 @@ function keywords(v:string){const counts=new Map<string,number>();words(v).forEa
 async function extractFile(file:File){
  if(file.name.toLowerCase().endsWith(".pdf")){
   const pdfjs=await import("pdfjs-dist/legacy/build/pdf.mjs");
-  const worker=await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url");
-  pdfjs.GlobalWorkerOptions.workerSrc=worker.default;
+  pdfjs.GlobalWorkerOptions.workerSrc="/pdf.worker.min.mjs";
   const pdf=await pdfjs.getDocument({data:await file.arrayBuffer()}).promise;
   const pages:string[]=[];
   for(let n=1;n<=pdf.numPages;n++){const content=await(await pdf.getPage(n)).getTextContent();pages.push(content.items.map(item=>"str" in item?item.str:"").join(" "))}
