@@ -1,0 +1,4 @@
+﻿import type {Metadata} from "next";
+import "./globals.css";
+export const metadata:Metadata={title:"CVOLT — Free ATS-Friendly CV Builder",description:"Create a clean, professional, ATS-friendly CV for free. No registration, no hidden fees, and your information is never permanently stored.",icons:{icon:"/favicon.svg"},openGraph:{title:"Build an ATS-Friendly CV for Free",description:"No registration • Free PDF • Private by design",images:["/og.png"]},twitter:{card:"summary_large_image",title:"Build an ATS-Friendly CV for Free",description:"No registration • Free PDF • Private by design",images:["/og.png"]}};
+export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){return <html lang="en"><body>{children}</body></html>}
