@@ -8,7 +8,9 @@ function keywords(v:string){const counts=new Map<string,number>();words(v).forEa
 async function extractFile(file:File){
  if(file.name.toLowerCase().endsWith(".pdf")){
   const pdfjs=await import("pdfjs-dist/legacy/build/pdf.mjs");
-  const pdf=await pdfjs.getDocument({data:await file.arrayBuffer(),disableWorker:true}).promise;
+  const worker=await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url");
+  pdfjs.GlobalWorkerOptions.workerSrc=worker.default;
+  const pdf=await pdfjs.getDocument({data:await file.arrayBuffer()}).promise;
   const pages:string[]=[];
   for(let n=1;n<=pdf.numPages;n++){const content=await(await pdf.getPage(n)).getTextContent();pages.push(content.items.map(item=>"str" in item?item.str:"").join(" "))}
   return pages.join("\n");
@@ -23,9 +25,9 @@ export default function CvChecker(){
  const analysis=useMemo(()=>{const lower=cv.toLowerCase(),jobKeys=keywords(job),matched=jobKeys.filter(w=>lower.includes(w)),missing=jobKeys.filter(w=>!lower.includes(w)),sections=["experience","education","skills","summary","projects"].filter(s=>lower.includes(s)),contact=/[\w.+-]+@[\w.-]+\.[a-z]{2,}/i.test(cv)&&/(?:\+?\d[\d ()-]{7,}\d)/.test(cv),lengthScore=Math.min(25,Math.round(words(cv).length/12)),ats=cv?Math.min(100,lengthScore+sections.length*10+(contact?20:0)+(/linkedin|github|portfolio/i.test(cv)?5:0)):0,match=jobKeys.length?Math.round(matched.length/jobKeys.length*100):0;return{ats,match,matched,missing,sections,contact}},[cv,job]);
  async function upload(file?:File){if(!file)return;setFileName(file.name);setStatus("Reading your CV locally…");try{const text=await extractFile(file);setCv(text);setStatus(text.trim()?"CV ready to check":"No readable text found. Try pasting the CV text.")}catch{setStatus("This file could not be read. Try another file or paste the CV text.")}}
  return <section className="checker-section" id="cv-checker"><div className="wrap">
-  <div className="checker-heading"><div><p className="section-kicker">FREE CV CHECK</p><h2>See how your CV measures up.</h2><p>Upload your CV, then paste the job description to estimate ATS readiness and keyword alignment.</p></div><span>?? Files stay in your browser</span></div>
+  <div className="checker-heading"><div><p className="section-kicker">FREE CV CHECK</p><h2>See how your CV measures up.</h2><p>Upload your CV, then paste the job description to estimate ATS readiness and keyword alignment.</p></div><span>PRIVATE - Files stay in your browser</span></div>
   <div className="checker-shell"><div className="checker-inputs">
-   <div className="upload-box" onClick={()=>inputRef.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();upload(e.dataTransfer.files[0])}}><input ref={inputRef} type="file" accept=".pdf,.docx,.txt" onChange={e=>upload(e.target.files?.[0])}/><b>{fileName||"Upload your CV"}</b><p>Drop a PDF, DOCX, or TXT file here, or click to browse.</p><button type="button">Choose file ?</button>{status&&<small>{status}</small>}</div>
+   <div className="upload-box" onClick={()=>inputRef.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();upload(e.dataTransfer.files[0])}}><input ref={inputRef} type="file" accept=".pdf,.docx,.txt" onChange={e=>upload(e.target.files?.[0])}/><b>{fileName||"Upload your CV"}</b><p>Drop a PDF, DOCX, or TXT file here, or click to browse.</p><button type="button">Browse files</button>{status&&<small>{status}</small>}</div>
    <label><span>Or paste your CV text</span><textarea value={cv} onChange={e=>setCv(e.target.value)} placeholder="Paste your CV text here…"/></label>
    <label><span>Paste the job description</span><textarea value={job} onChange={e=>setJob(e.target.value)} placeholder="Paste the role requirements here to compare important keywords…"/></label>
   </div><div className="checker-results">
