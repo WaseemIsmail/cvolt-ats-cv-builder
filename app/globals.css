@@ -40,3 +40,5 @@
 .alignment-control select{min-width:190px}.alignment-control select:has(option[value="left"]:checked){border-color:#8da8ed;background-color:#f8faff}@media(max-width:640px){.alignment-control select{min-width:180px}}
 
 .brand-image{display:inline-flex;align-items:center;text-decoration:none;line-height:0}.brand-image img{display:block;width:145px;height:32px}.app-brand.brand-image{background:transparent;padding:0;box-shadow:none}.app-brand.brand-image img{width:132px;height:32px}@media(max-width:640px){.brand-image img{width:125px;height:29px}.app-brand.brand-image img{width:112px;height:28px}}
+
+.app-brand.brand-image img{width:146px;height:60px}@media(max-width:640px){.app-brand.brand-image img{width:116px;height:48px}}
